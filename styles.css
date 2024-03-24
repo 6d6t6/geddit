@@ -15,15 +15,48 @@ body {
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
 }
 
-#button-container {
-    display: flex;
+h1 {
+    text-align: center;
+    margin-bottom: 20px;
 }
 
-button {
-    display: block;
-    flex: 1;
+.mode-selector {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.mode-selector input[type="radio"] {
+    display: none;
+}
+
+.mode-selector label {
+    cursor: pointer;
+    padding: 10px 20px;
+    border-radius: 5px;
+    background-color: #555555;
+    margin: 0 10px;
+}
+
+.mode-selector label:hover {
+    background-color: #777777;
+}
+
+#url-input {
+    width: 100%;
     padding: 10px;
-    margin: 0 5px;
+    box-sizing: border-box;
+    border: 1px solid #666666;
+    border-radius: 5px;
+    background-color: #444444;
+    color: #ffffff;
+    margin-bottom: 20px;
+}
+
+#download-btn {
+    display: block;
+    width: 100%;
+    padding: 10px;
     border: none;
     border-radius: 5px;
     background-color: #ff5722;
@@ -31,17 +64,6 @@ button {
     cursor: pointer;
 }
 
-button:hover {
+#download-btn:hover {
     background-color: #ff7043;
-}
-
-textarea {
-    width: calc(100% - 20px);
-    margin-top: 10px;
-    padding: 10px;
-    box-sizing: border-box;
-    border: 1px solid #666666;
-    border-radius: 5px;
-    background-color: #444444;
-    color: #ffffff;
 }
