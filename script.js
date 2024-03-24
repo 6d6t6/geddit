@@ -1,38 +1,77 @@
 document.addEventListener('DOMContentLoaded', function () {
     const downloadBtn = document.getElementById('download-btn');
+    const zippitBtn = document.getElementById('zippit-btn');
     const urlInput = document.getElementById('url-input');
+    const container = document.querySelector('.container');
 
-    downloadBtn.addEventListener('click', async function () {
+    downloadBtn.addEventListener('click', function () {
         const urls = urlInput.value.trim().split('\n').filter(url => url.trim() !== '');
         if (urls.length === 0) {
             alert('Please enter at least one valid URL.');
             return;
         }
-        for (const url of urls) {
-            const parsedUrl = parseUrl(url);
-            await downloadImage(parsedUrl);
+        if (urls.length === 1) {
+            initiateDownload(urls[0], 'geddit_image.jpg');
+        } else {
+            showZippitButton();
         }
     });
 
-    function parseUrl(url) {
-        const questionMarkIndex = url.indexOf('?');
-        return questionMarkIndex !== -1 ? url.slice(0, questionMarkIndex) : url;
+    zippitBtn.addEventListener('click', function () {
+        const urls = urlInput.value.trim().split('\n').filter(url => url.trim() !== '');
+        const zip = new JSZip();
+        const promises = [];
+        urls.forEach((url, index) => {
+            const filename = `geddit_image_${index + 1}.jpg`;
+            promises.push(fetchImage(url).then(blob => {
+                zip.file(filename, blob);
+            }));
+        });
+        Promise.all(promises).then(() => {
+            zip.generateAsync({ type: "blob" }).then(blob => {
+                initiateDownload(URL.createObjectURL(blob), 'geddit.zip');
+            });
+        });
+    });
+
+    function fetchImage(url) {
+        return fetch(url)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.blob();
+            });
     }
 
-    async function downloadImage(url) {
-        try {
-            const response = await fetch(url);
-            const blob = await response.blob();
-            const filename = 'geddit.jpg';
-            const downloadLink = document.createElement('a');
-            downloadLink.href = URL.createObjectURL(blob);
-            downloadLink.download = filename;
-            downloadLink.style.display = 'none';
-            document.body.appendChild(downloadLink);
-            downloadLink.click();
-            document.body.removeChild(downloadLink);
-        } catch (error) {
-            console.error('Error downloading image:', error);
+    function initiateDownload(url, filename) {
+        const downloadLink = document.createElement('a');
+        downloadLink.href = url;
+        downloadLink.download = filename;
+        downloadLink.target = '_blank';
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+    }
+
+    function showZippitButton() {
+        if (!zippitBtn.classList.contains('visible')) {
+            zippitBtn.classList.add('visible');
+            downloadBtn.style.width = '50%';
         }
     }
+
+    function hideZippitButton() {
+        if (zippitBtn.classList.contains('visible')) {
+            zippitBtn.classList.remove('visible');
+            downloadBtn.style.width = '100%';
+        }
+    }
+
+    urlInput.addEventListener('input', function () {
+        const urls = urlInput.value.trim().split('\n').filter(url => url.trim() !== '');
+        if (urls.length <= 1) {
+            hideZippitButton();
+        }
+    });
 });
