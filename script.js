@@ -3,17 +3,12 @@ document.addEventListener('DOMContentLoaded', function () {
     const urlInput = document.getElementById('url-input');
 
     downloadBtn.addEventListener('click', function () {
-        const url = urlInput.value.trim();
-
-        if (url === '') {
-            alert('Please enter a valid URL.');
+        const urls = urlInput.value.trim().split('\n').filter(url => url.trim() !== '');
+        if (urls.length === 0) {
+            alert('Please enter at least one valid URL.');
             return;
         }
-
-        const questionMarkIndex = url.indexOf('?');
-        const parsedUrl = questionMarkIndex !== -1 ? url.slice(0, questionMarkIndex) : url;
-
-        initiateDownload(parsedUrl);
+        urls.forEach(url => initiateDownload(url));
     });
 
     function initiateDownload(url) {
@@ -22,9 +17,7 @@ document.addEventListener('DOMContentLoaded', function () {
         downloadLink.download = 'geddit_image.jpg';
         downloadLink.target = '_blank';
         document.body.appendChild(downloadLink);
-
         downloadLink.click();
-
         document.body.removeChild(downloadLink);
     }
 });
