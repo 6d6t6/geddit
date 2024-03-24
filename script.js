@@ -8,20 +8,9 @@ document.addEventListener('DOMContentLoaded', function () {
             alert('Please enter at least one valid URL.');
             return;
         }
-        if (urls.length === 1) {
-            const parsedUrl = parseUrl(urls[0]);
+        for (const url of urls) {
+            const parsedUrl = parseUrl(url);
             await downloadImage(parsedUrl);
-        } else {
-            const zipFileName = 'geddit.zip';
-            const zip = new JSZip();
-            for (let i = 0; i < urls.length; i++) {
-                const parsedUrl = parseUrl(urls[i]);
-                const blob = await fetchImage(parsedUrl);
-                zip.file(`image${i+1}.jpg`, blob);
-            }
-            zip.generateAsync({type:"blob"}).then(function(content) {
-                saveAs(content, zipFileName);
-            });
         }
     });
 
@@ -30,15 +19,11 @@ document.addEventListener('DOMContentLoaded', function () {
         return questionMarkIndex !== -1 ? url.slice(0, questionMarkIndex) : url;
     }
 
-    async function fetchImage(url) {
-        const response = await fetch(url);
-        return await response.blob();
-    }
-
     async function downloadImage(url) {
         try {
-            const blob = await fetchImage(url);
-            const filename = 'geddit_image.jpg';
+            const response = await fetch(url);
+            const blob = await response.blob();
+            const filename = 'geddit.jpg';
             const downloadLink = document.createElement('a');
             downloadLink.href = URL.createObjectURL(blob);
             downloadLink.download = filename;
